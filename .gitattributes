@@ -1,0 +1,15 @@
+# Treat Verilog/SystemVerilog as text
+*.v text
+*.sv text
+*.vh text
+
+# Constraint files
+*.xdc text
+
+# Markdown and documentation
+*.md text
+*.txt text
+
+# Binary files
+*.bit binary
+*.bin binary
