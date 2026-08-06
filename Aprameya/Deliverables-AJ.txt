@@ -1,0 +1,13 @@
+rtl/
+├── uart/
+│   ├── baud_gen.v
+│   ├── uart_rx.v
+│   └── shift_register.v
+│
+└── memory/
+    └── memory_buffer.v
+
+tb/
+├── tb_baud_gen.v
+├── tb_uart_rx.v
+└── tb_memory_buffer.v

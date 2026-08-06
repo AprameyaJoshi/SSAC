@@ -1,0 +1,10 @@
+├── fsm/
+│   ├── packet_fsm.v
+│   └── checksum.v
+│
+└── fifo/
+    └── rx_fifo.v
+tb/
+├── tb_packet_fsm.v
+├── tb_checksum.v
+└── tb_rx_fifo.v

@@ -1,0 +1,9 @@
+rtl/
+├── fifo/
+│   └── processing_fifo.v
+│
+└── cdc/
+    └── cdc_sync.v
+tb/
+├── tb_processing_fifo.v
+└── tb_cdc.v
