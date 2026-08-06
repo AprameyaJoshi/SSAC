@@ -1,0 +1,26 @@
+# Vivado generated project folders
+*.cache/
+*.hw/
+*.runs/
+*.sim/
+*.ip_user_files/
+
+# Hidden Vivado folder
+.Xil/
+
+# Logs and reports
+*.jou
+*.log
+*.str
+*.pb
+*.xml
+
+# Simulation
+xsim.dir/
+*.wdb
+*.wcfg
+
+# Bitstreams
+*.bit
+*.bin
+*.ltx
