@@ -23,11 +23,11 @@
 module checksum(
 input clk,
 input [7:0]chk_sum,
-output reg [7:0]pkt_data[0:15],
-output reg [7:0]pkt_len,
+input [7:0]pkt_data[0:15],
+input [7:0]pkt_len,
 output reg [7:0]chk_ans
 );
-reg [3:0] i=0;
+reg[3:0]i=0;
 always @(posedge clk)
 begin
        while(i<pkt_len)

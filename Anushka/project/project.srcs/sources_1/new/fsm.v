@@ -24,22 +24,24 @@ module fsm(
 input clk,rst,
 input [7:0]fifo_data,
 input fifo_empty,rd_en,
+
 output reg pkt_valid,pkt_err,
 output reg [7:0]chk_sum,
-input [7:0]chk_ans,
 output reg [7:0]pkt_len,
-output reg pkt_data_full,
-output reg [7:0]pkt_data[0:15],
-output reg [7:0]inv_pkt_data[0:15]
+output reg pkt_data_full
 );
-reg [3:0]i=0,j=0,inv=0;
+reg [3:0]i,j,inv=0;
 reg [2:0]state;
+reg [7:0]pkt_data[0:15];
+reg [7:0]inv_pkt_data[0:15];
+reg [7:0]calc_chk_sum;
 parameter idle=3'b000;
 parameter read_header=3'b001;
 parameter read_len=3'b010;
 parameter read_data=3'b011;
-parameter read_checksum=3'b100;
-parameter read_end=3'b101;
+parameter checksum_calc=3'b100;
+parameter check_pkt=3'b101;
+parameter read_end=3'b110;
 
 //idle,header,length,data,checksum,end
 //checksum state only to read checksum value. Validation is done in another verilog program.
@@ -81,7 +83,7 @@ begin
         
         read_len:begin
                  //read_len state -> reads the number of data present in a particular packet.
-                    if(fifo_data>4'hE)
+                    if(fifo_data>4'hF)
                     begin
                         $display("Number of data incoming is greater than the storage space available.");
                         inv_pkt_data[inv]<=fifo_data;
@@ -96,20 +98,33 @@ begin
         
         read_data:begin
                   //read_data state -> stores the data in an array with depth 16.
+                    i=0;
                     while((i<pkt_len)&&(!fifo_empty))
                     begin
-                       pkt_data[i]<=fifo_data; 
-                       i<=i+1'b1;
+                        if(fifo_empty)
+                        begin
+                            $display("FIFO empty.");
+                            for(j=0;j<=4'hF;j=j+1)
+                                pkt_data[j]<=0;                               
+                            state<=idle;                            
+                        end
+                        pkt_data[i]<=fifo_data; 
+                        i<=i+1'b1;     
                     end
-                    if(i==4'hF)
-                        pkt_data_full=1'b1;
-                    state<=read_checksum;
+                    if(!fifo_empty)
+                    begin
+                        if(i==4'hF)
+                            pkt_data_full=1'b1;
+                        state<=checksum_calc;
+                    end
                   end
                   
-        read_checksum:begin 
+        checksum_calc:begin 
                       // read_checksum state -> reads the checksum data. Checks if the calculated checksum is equal to the received checksum data.
                         chk_sum<=fifo_data;
-                        if(chk_sum==chk_ans)
+                        for(i=0;i<pkt_len;i=i+1'b1) 
+                            calc_chk_sum<=calc_chk_sum+pkt_data[i];
+                        if(chk_sum==calc_chk_sum)
                             state<=read_end;
                         else
                         begin
@@ -119,15 +134,27 @@ begin
                             state<=idle;
                         end
                       end 
+         
+        check_pkt:begin
+                    
+                    //if(chk_sum==calc_chk_sum)
+                        
+                  end
                               
         read_end:begin
+                 // read_end -> reads the end of the packet. 
                     if(fifo_data==8'hFF)
                     begin
                         pkt_valid=1'b1;
                         state<= idle;
                     end
                     else
-                        state<=read_data; //??   
+                    begin
+                        $display("Packet has no end.");
+                        for(j=0;j<=4'hF;j=j+1)
+                            pkt_data[j]<=0;                               
+                        state<=idle;
+                    end  
                  end 
         endcase
     end
