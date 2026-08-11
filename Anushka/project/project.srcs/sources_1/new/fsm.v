@@ -40,11 +40,8 @@ parameter read_header=3'b001;
 parameter read_len=3'b010;
 parameter read_data=3'b011;
 parameter checksum_calc=3'b100;
-parameter check_pkt=3'b101;
-parameter read_end=3'b110;
+parameter read_end=3'b11;
 
-//idle,header,length,data,checksum,end
-//checksum state only to read checksum value. Validation is done in another verilog program.
 always @(posedge clk)
 begin
     if(!rst)
@@ -134,12 +131,6 @@ begin
                             state<=idle;
                         end
                       end 
-         
-        check_pkt:begin
-                    
-                    //if(chk_sum==calc_chk_sum)
-                        
-                  end
                               
         read_end:begin
                  // read_end -> reads the end of the packet. 
@@ -150,7 +141,7 @@ begin
                     end
                     else
                     begin
-                        $display("Packet has no end.");
+                        $display("Packet has no end.Invalid packet.");
                         for(j=0;j<=4'hF;j=j+1)
                             pkt_data[j]<=0;                               
                         state<=idle;
