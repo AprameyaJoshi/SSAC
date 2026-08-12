@@ -24,16 +24,14 @@ module fsm(
 input clk,rst,
 input [7:0]fifo_data,
 input fifo_empty,rd_en,
-
 output reg pkt_valid,pkt_err,
 output reg [7:0]chk_sum,
 output reg [7:0]pkt_len,
 output reg pkt_data_full
 );
-reg [3:0]i,j,inv=0;
+reg[3:0]i,j;
 reg [2:0]state;
 reg [7:0]pkt_data[0:15];
-reg [7:0]inv_pkt_data[0:15];
 reg [7:0]calc_chk_sum;
 parameter idle=3'b000;
 parameter read_header=3'b001;
@@ -70,8 +68,6 @@ begin
                             state<=read_len;
                         else
                         begin
-                            inv_pkt_data[inv]<=fifo_data;
-                            inv<=inv+1'b1;
                             state<=idle;
                             pkt_err=1'b1;
                         end
@@ -80,11 +76,9 @@ begin
         
         read_len:begin
                  //read_len state -> reads the number of data present in a particular packet.
-                    if(fifo_data>4'hF)
+                    if(fifo_data>4'hF+1'b1)
                     begin
                         $display("Number of data incoming is greater than the storage space available.");
-                        inv_pkt_data[inv]<=fifo_data;
-                        inv<=inv+1'b1;
                     end
                     else
                     begin
@@ -110,7 +104,7 @@ begin
                     end
                     if(!fifo_empty)
                     begin
-                        if(i==4'hF)
+                        if(i==(4'hF+1'b1))
                             pkt_data_full=1'b1;
                         state<=checksum_calc;
                     end
