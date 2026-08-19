@@ -27,6 +27,8 @@ wire pkt_valid,pkt_err;
 wire [7:0]chk_sum;
 wire [7:0]pkt_len;
 wire pkt_data_full;
+wire [7:0]byte_out;
+
 
 fsm dut(
         .clk(clk),
@@ -38,14 +40,26 @@ fsm dut(
         .pkt_err(pkt_err),
         .chk_sum(chk_sum),
         .pkt_len(pkt_len),
-        .pkt_data_full(pkt_data_full)
+        .pkt_data_full(pkt_data_full),
+        .byte_out(byte_out)
         );
 
 always #5 clk=~clk;
 initial begin
-clk=0;fifo_empty=1;rd_en=0;rst=0;
-#10 rst=1;
-#10 fifo_empty=0; rd_en=1;
-#200 $finish;
+clk=0;rst=0;fifo_empty=0;
+#10 rst=1;rd_en=1;
+@(negedge clk)
+begin
+#10 fifo_data=8'h10;
+#10 fifo_data=8'hAA;
+#10 fifo_data=8'd3;
+#10 fifo_data=8'h11;
+#10 fifo_data=8'h99;
+#10 fifo_data=8'h20;
+#10 fifo_data=8'hCA;
+#10 fifo_data=8'hFF;
+#10 fifo_data=8'h21;
+end
+#60 $finish;
 end
 endmodule

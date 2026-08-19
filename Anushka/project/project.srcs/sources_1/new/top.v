@@ -24,8 +24,7 @@ module top(
 input clk,rst,rd_en,wr_en,
 input[7:0]data_in,
 output wire full,
-output wire [7:0] fifo_data,
-
+//output wire [7:0] fifo_data,
 output wire pkt_valid,pkt_err,
 output wire [7:0]chk_sum,
 output wire [7:0]pkt_len,

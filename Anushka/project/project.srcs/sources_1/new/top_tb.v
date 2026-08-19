@@ -24,7 +24,7 @@ module top_tb;
 reg clk,rst,rd_en,wr_en;
 reg[7:0]data_in;
 wire full;
-wire [7:0] fifo_data;
+//wire [7:0] fifo_data;
 wire pkt_valid,pkt_err;
 wire [7:0]chk_sum;
 wire [7:0]pkt_len;
@@ -36,7 +36,7 @@ top dut (   .clk(clk),
             .wr_en(wr_en),
             .data_in(data_in),
             .full(full),
-            .fifo_data(fifo_data),
+            //.fifo_data(fifo_data),
             .pkt_valid(pkt_valid),
             .pkt_err(pkt_err),
             .chk_sum(chk_sum),
