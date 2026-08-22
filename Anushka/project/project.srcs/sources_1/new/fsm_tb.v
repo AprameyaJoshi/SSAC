@@ -5,7 +5,7 @@
 // 
 // Create Date: 12.08.2026 14:18:15
 // Design Name: 
-// Module Name: rx_fifo_tb
+// Module Name: fsm_tb
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -23,7 +23,7 @@ module fsm_tb;
 reg clk,rst;
 reg [7:0]fifo_data;
 reg fifo_empty,rd_en;
-wire pkt_valid,pkt_err;
+wire pkt_valid;
 wire [7:0]chk_sum;
 wire [7:0]pkt_len;
 wire pkt_data_full;
@@ -37,7 +37,6 @@ fsm dut(
         .fifo_empty(fifo_empty),
         .rd_en(rd_en),
         .pkt_valid(pkt_valid),
-        .pkt_err(pkt_err),
         .chk_sum(chk_sum),
         .pkt_len(pkt_len),
         .pkt_data_full(pkt_data_full),
@@ -46,20 +45,26 @@ fsm dut(
 
 always #5 clk=~clk;
 initial begin
-clk=0;rst=0;fifo_empty=0;
-#10 rst=1;rd_en=1;
+clk=0;rst=0;fifo_empty=1;rd_en=0;
+#10 rst=1;rd_en=1;fifo_empty=0;
 @(negedge clk)
 begin
 #10 fifo_data=8'h10;
 #10 fifo_data=8'hAA;
-#10 fifo_data=8'd3;
+#10 fifo_data=8'd10;
 #10 fifo_data=8'h11;
 #10 fifo_data=8'h99;
 #10 fifo_data=8'h20;
 #10 fifo_data=8'hCA;
+#10 fifo_data=8'h94;
+#10 fifo_data=8'h28;
+#10 fifo_data=8'h10;
+#10 fifo_data=8'h11;
+#10 fifo_data=8'h99;
+#10 fifo_data=8'h20;
+#10 fifo_data=8'h2A;
 #10 fifo_data=8'hFF;
-#10 fifo_data=8'h21;
 end
-#60 $finish;
+#140 $finish;
 end
 endmodule

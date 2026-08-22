@@ -24,7 +24,8 @@ module rx_fifo(
 input clk,rst,rd_en,wr_en,
 input[7:0]data_in,
 output wire full,empty,
-output reg[7:0]fifo_data 
+output reg[7:0]fifo_data,
+input pkt_valid 
 );
 
 reg [7:0]mem[0:15];
@@ -47,7 +48,7 @@ begin
             wr_ptr<=wr_ptr+1'b1;
             cnt=cnt+1'b1;
         end
-        if (rd_en && !empty)
+        if (rd_en && !empty && !pkt_valid)
         begin
             fifo_data<=mem[rd_ptr];
             rd_ptr<=rd_ptr+1'b1;
