@@ -28,7 +28,7 @@ wire [7:0]chk_sum;
 wire [7:0]pkt_len;
 wire pkt_data_full;
 wire [7:0]byte_out;
-
+//wire busy;
 
 fsm dut(
         .clk(clk),
@@ -41,30 +41,55 @@ fsm dut(
         .pkt_len(pkt_len),
         .pkt_data_full(pkt_data_full),
         .byte_out(byte_out)
+        //.busy(busy)
         );
 
 always #5 clk=~clk;
 initial begin
 clk=0;rst=0;fifo_empty=1;rd_en=0;
 #10 rst=1;rd_en=1;fifo_empty=0;
-@(negedge clk)
+@(posedge clk)
 begin
 #10 fifo_data=8'h10;
+
 #10 fifo_data=8'hAA;
-#10 fifo_data=8'd10;
+#10 fifo_data=8'd3;
 #10 fifo_data=8'h11;
 #10 fifo_data=8'h99;
 #10 fifo_data=8'h20;
 #10 fifo_data=8'hCA;
-#10 fifo_data=8'h94;
-#10 fifo_data=8'h28;
-#10 fifo_data=8'h10;
-#10 fifo_data=8'h11;
-#10 fifo_data=8'h99;
-#10 fifo_data=8'h20;
-#10 fifo_data=8'h2A;
 #10 fifo_data=8'hFF;
+
+#10 fifo_data=8'h26;
+#10 fifo_data=8'h33;
+
+#10 fifo_data=8'hAA;
+#10 fifo_data=8'd4;
+#10 fifo_data=8'h33;
+#10 fifo_data=8'h16;
+#10 fifo_data=8'hEA;
+#10 fifo_data=8'h40;
+#10 fifo_data=8'h73;
+#10 fifo_data=8'hFF;
+
+#10 fifo_data=8'hAA;
+#10 fifo_data=8'd2;
+#10 fifo_data=8'hEE;
+#10 fifo_data=8'h34;
+#10 fifo_data=8'h22;
+#10 fifo_data=8'hFF;
+
+#10 fifo_data=8'h89;
+#10 fifo_data=8'h12;
+
+#10 fifo_data=8'hAA;
+#10 fifo_data=8'd2;
+#10 fifo_data=8'h18;
+#10 fifo_data=8'h60;
+#10 fifo_data=8'h78;
+#10 fifo_data=8'hFF;
+
+#100 $finish;
 end
-#140 $finish;
 end
 endmodule
