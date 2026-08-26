@@ -24,7 +24,7 @@ module shift_reg_tb;
     reg uart_clk;
     reg rst;
     reg rx_out;
-    reg bit_valid;
+    reg shift_en;
     wire [7:0] rx_byte;
     wire byte_ready;
     
@@ -32,7 +32,7 @@ module shift_reg_tb;
         .uart_clk(uart_clk),
         .rst(rst),
         .rx_out(rx_out),
-        .bit_valid(bit_valid),
+        .shift_en(shift_en),
         .rx_byte(rx_byte),
         .byte_ready(byte_ready)
         );
@@ -45,28 +45,52 @@ module shift_reg_tb;
         #20;
         rst = 1;
         rx_out = 1'b0;
-        bit_valid = 1;
+        shift_en = 1;
         #20;
         rx_out = 1'b1;
-        bit_valid = 1;
+        shift_en = 1;
         #20;
         rx_out = 1'b0;
-        bit_valid = 1;
+        shift_en = 1;
         #20;
         rx_out = 1'b1;
-        bit_valid = 1;
+        shift_en = 1;
         #20;
         rx_out = 1'b1;
-        bit_valid = 1;
+        shift_en = 1;
         #20;
         rx_out = 1'b0;
-        bit_valid = 1;
+        shift_en = 1;
         #20;
         rx_out = 1'b0;
-        bit_valid = 1;
+        shift_en = 1;
         #20;
         rx_out = 1'b1;
-        bit_valid = 1;
+        shift_en = 1;
+        #20;
+        rx_out = 1'b1;
+        shift_en = 1;
+        #20;
+        rx_out = 1'b0;
+        shift_en = 1;
+        #20;
+        rx_out = 1'b1;
+        shift_en = 1;
+        #20;
+        rx_out = 1'b0;
+        shift_en = 1;
+        #20;
+        rx_out = 1'b1;
+        shift_en = 1;
+        #20;
+        rx_out = 1'b0;
+        shift_en = 1;
+        #20;
+        rx_out = 1'b1;
+        shift_en = 1;
+        #20;
+        rx_out = 1'b0;
+        shift_en = 1;
         #40;
         $finish;
     end    

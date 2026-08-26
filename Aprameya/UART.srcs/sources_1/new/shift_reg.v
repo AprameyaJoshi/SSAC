@@ -21,42 +21,36 @@
 
 
 module shift_reg(
-    input uart_clk,rst,
-    input rx_out,bit_valid,
+    input uart_clk,rst, byte_valid,
+    input rx_out,shift_en,
     output reg [7:0] rx_byte,
     output reg byte_ready
     );
     
-    integer i = 1'b0;
+    reg [2:0] i = 3'b0;
+            
     always @ (posedge uart_clk)
     begin
         if(!rst)
         begin
             rx_byte <= 8'b0;
-            byte_ready = 1'b0;
+            byte_ready <= 1'b0;
         end
         else
         begin
-            if(bit_valid == 1)
-            begin
-                if(i <= 7)
+            byte_ready <= 1'b0;
+            if(shift_en == 1)
+                if(i < 7)
                 begin
                     rx_byte[i] <= rx_out;
                     i <= i+1'b1;
                 end
-                if(i == 7)
+                else // if(i == 7 && byte_valid == 1)
                 begin
-                    byte_ready = 1'b1;
-                end
-                if(i == 8)
-                begin
+                    rx_byte[i] <= rx_out;
+                    byte_ready <= 1'b1;
                     i <= 1'b0;
-                    rx_byte = 8'b0;
-                    byte_ready = 1'b0;
-                end
-            end
-            else
-                byte_ready = 1'b0;   
-        end
+                end 
+        end               
     end
 endmodule
