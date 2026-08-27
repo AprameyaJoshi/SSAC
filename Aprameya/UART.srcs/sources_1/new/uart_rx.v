@@ -69,11 +69,11 @@ module uart_rx(
             case(state)
                 IDLE:   begin
                             if(rx_in == 0)
-                                tick_counter = 4'b0;
+                                tick_counter <= 4'b0;
                         end            
             
                 START:  begin
-                        if(tick_counter == 7)
+                        if(tick_counter == 7 && baud_tickx16)
                             if(rx_in == 0)
                             begin
                                 tick_counter <= 4'b0;
@@ -95,7 +95,7 @@ module uart_rx(
                         end
                         
                 STOP:   begin
-                            if(tick_counter == 15)
+                            if(tick_counter == 15 && baud_tickx16)
                                 if(rx_in == 1)
                                 begin
                                     byte_valid <= 1'b1;
@@ -125,7 +125,7 @@ module uart_rx(
                         end
                         
                 START:  begin
-                            if(tick_counter == 7)
+                            if(tick_counter == 7 && baud_tickx16)
                             begin
                                 if(rx_in == 0)
                                     n_state = DATA;
@@ -143,7 +143,7 @@ module uart_rx(
                         end
                         
                 STOP:   begin
-                            if(tick_counter == 15)
+                            if(tick_counter == 15 && baud_tickx16)
                                 if(rx_in == 1)
                                     n_state = IDLE;
                                 else

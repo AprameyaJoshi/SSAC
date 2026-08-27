@@ -27,7 +27,7 @@ module shift_reg(
     output reg byte_ready
     );
     
-    reg [2:0] i = 3'b0;
+    reg [2:0] i;
             
     always @ (posedge uart_clk)
     begin
@@ -35,6 +35,7 @@ module shift_reg(
         begin
             rx_byte <= 8'b0;
             byte_ready <= 1'b0;
+            i <= 1'b0; 
         end
         else
         begin
@@ -45,7 +46,7 @@ module shift_reg(
                     rx_byte[i] <= rx_out;
                     i <= i+1'b1;
                 end
-                else // if(i == 7 && byte_valid == 1)
+                else
                 begin
                     rx_byte[i] <= rx_out;
                     i <= 1'b0;
