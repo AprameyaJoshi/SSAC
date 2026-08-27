@@ -25,7 +25,8 @@ module uart_sys(
     input rx_in,
     output byte_valid,
     output [7:0] rx_byte,
-    output byte_ready
+    output byte_ready,
+    output framing_err
     );
     
     wire baud_tickx16;
@@ -45,7 +46,8 @@ module uart_sys(
         .rx_in(rx_in),
         .rx_out(rx_out),
         .shift_en(shift_en),
-        .byte_valid(byte_valid)
+        .byte_valid(byte_valid),
+        .framing_err(framing_err)
         );
         
     shift_reg shift (

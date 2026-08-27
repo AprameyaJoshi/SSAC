@@ -48,9 +48,10 @@ module shift_reg(
                 else // if(i == 7 && byte_valid == 1)
                 begin
                     rx_byte[i] <= rx_out;
-                    byte_ready <= 1'b1;
                     i <= 1'b0;
-                end 
+                end
+            else if (byte_valid == 1)
+                 byte_ready <= 1'b1;
         end               
     end
 endmodule

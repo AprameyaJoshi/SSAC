@@ -27,6 +27,7 @@ module uart_sys_tb;
     wire byte_valid;
     wire [7:0] rx_byte;
     wire byte_ready;
+    wire framing_err;
     
     uart_sys top (
         .uart_clk(uart_clk),
@@ -34,7 +35,8 @@ module uart_sys_tb;
         .rx_in(rx_in),
         .byte_valid(byte_valid),
         .rx_byte(rx_byte),
-        .byte_ready(byte_ready)
+        .byte_ready(byte_ready),
+        .framing_err(framing_err)
         );
     
     always #10 uart_clk = ~uart_clk;
@@ -85,8 +87,30 @@ module uart_sys_tb;
         #8640;
         rx_in = 0;
         #8640;
-        rx_in = 1; // STOP BIT
-        #560;
+        rx_in = 0; // INVALID STOP BIT
+        #8640;
+        rx_in = 1;
+        #8640;
+        rx_in = 0; // START BIT
+        #8640;
+        rx_in = 0; //byte: 11001100
+        #8640;
+        rx_in = 0;
+        #8640;
+        rx_in = 1;
+        #8640;
+        rx_in = 1;
+        #8640;
+        rx_in = 0;
+        #8640;
+        rx_in = 0;
+        #8640;
+        rx_in = 1;
+        #8640;
+        rx_in = 1;
+        #8640;
+        rx_in = 1; // VALID STOP BIT
+        #8640;
         $finish;
     end
 endmodule

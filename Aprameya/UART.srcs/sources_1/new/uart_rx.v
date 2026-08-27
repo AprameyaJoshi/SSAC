@@ -24,18 +24,18 @@ module uart_rx(
     input uart_clk, rst,
     input rx_in,
     output reg rx_out,
-    output reg shift_en, byte_valid
+    output reg shift_en, byte_valid, framing_err
     );
     
-    reg [1 :0] state,n_state;
+    reg [2 :0] state,n_state;
     reg [3:0] tick_counter = 4'b0;
     reg [2:0] bit_counter = 3'b0;
     
-    parameter IDLE = 2'b00;
-    parameter START = 2'b01;
-    parameter DATA = 2'b10;
-    parameter STOP = 2'b11;
-    
+    parameter IDLE = 3'b000;
+    parameter START = 3'b001;
+    parameter DATA = 3'b010;
+    parameter STOP = 3'b011;
+    parameter ERR = 3'b100;
     // WRONG APPROACH!!
     
 //    always @ (posedge baud_tickx16)
@@ -50,10 +50,11 @@ module uart_rx(
     begin
         if(!rst)
         begin
-            rx_out <= 1;
+            rx_out <= 0;
             state <= IDLE;
             shift_en <= 1'b0;
             byte_valid <= 1'b0;
+            framing_err <= 1'b0;
             bit_counter <= 3'b0;
         end
         
@@ -62,11 +63,17 @@ module uart_rx(
             state <= n_state;
             shift_en <= 1'b0;
             byte_valid <= 1'b0;
+            framing_err <= 1'b0;
             if(baud_tickx16)
-                tick_counter <= tick_counter + 1'b1;
+                tick_counter <= tick_counter + 1'b1; 
             case(state)
+                IDLE:   begin
+                            if(rx_in == 0)
+                                tick_counter = 4'b0;
+                        end            
+            
                 START:  begin
-                        if(tick_counter == 8)
+                        if(tick_counter == 7)
                             if(rx_in == 0)
                             begin
                                 tick_counter <= 4'b0;
@@ -75,14 +82,16 @@ module uart_rx(
                         end
                         
                 DATA:   begin
-                            if(tick_counter == 15)
+                            if(tick_counter == 15 && baud_tickx16)
+                            begin
                                 if(bit_counter <= 7)
                                 begin
                                     rx_out <= rx_in;                                    
                                     shift_en <= 1'b1;
-                                    tick_counter <= 1'b0;
                                     bit_counter <= bit_counter + 1'b1;
                                 end
+                            end
+                                
                         end
                         
                 STOP:   begin
@@ -90,6 +99,10 @@ module uart_rx(
                                 if(rx_in == 1)
                                 begin
                                     byte_valid <= 1'b1;
+                                end
+                                else
+                                begin
+                                    framing_err <= 1'b1;
                                 end
                         end
             endcase
@@ -112,7 +125,7 @@ module uart_rx(
                         end
                         
                 START:  begin
-                            if(tick_counter == 8)
+                            if(tick_counter == 7)
                             begin
                                 if(rx_in == 0)
                                     n_state = DATA;
@@ -122,7 +135,7 @@ module uart_rx(
                         end
                         
                 DATA:   begin
-                            if(tick_counter == 15)
+                            if(tick_counter == 15 && baud_tickx16)
                                 if(bit_counter == 7)
                                     begin                                  
                                         n_state = STOP;
@@ -131,6 +144,14 @@ module uart_rx(
                         
                 STOP:   begin
                             if(tick_counter == 15)
+                                if(rx_in == 1)
+                                    n_state = IDLE;
+                                else
+                                    n_state = ERR;
+                        end
+                
+                ERR:begin
+                            if(rx_in == 1)
                                 n_state = IDLE;
                         end
             endcase   
