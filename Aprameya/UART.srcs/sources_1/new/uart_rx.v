@@ -28,14 +28,15 @@ module uart_rx(
     );
     
     reg [2 :0] state,n_state;
-    reg [3:0] tick_counter = 4'b0;
-    reg [2:0] bit_counter = 3'b0;
+    reg [3:0] tick_counter;
+    reg [2:0] bit_counter;
     
     parameter IDLE = 3'b000;
     parameter START = 3'b001;
     parameter DATA = 3'b010;
     parameter STOP = 3'b011;
     parameter ERR = 3'b100;
+    
     // WRONG APPROACH!!
     
 //    always @ (posedge baud_tickx16)
@@ -56,6 +57,7 @@ module uart_rx(
             byte_valid <= 1'b0;
             framing_err <= 1'b0;
             bit_counter <= 3'b0;
+            tick_counter <= 4'b0;
         end
         
         else
@@ -64,8 +66,10 @@ module uart_rx(
             shift_en <= 1'b0;
             byte_valid <= 1'b0;
             framing_err <= 1'b0;
+            
             if(baud_tickx16)
                 tick_counter <= tick_counter + 1'b1; 
+                
             case(state)
                 IDLE:   begin
                             if(rx_in == 0)

@@ -30,15 +30,15 @@ module baud_gen #(
     output reg baud_tickx16    
     );
     
-    reg [4:0] counter;
+    reg [7:0] counter;
     localparam integer divisor = clk_freq/(baud_rate * oversample);
     
     always @ (posedge uart_clk)
     begin
         if(!rst)
         begin
-            counter <= 0;
-            baud_tickx16 <= 0;
+            counter <= 8'b0;
+            baud_tickx16 <= 1'b0;
         end
         
         else
@@ -47,7 +47,7 @@ module baud_gen #(
             if(counter == (divisor - 1))
             begin
             
-                counter <= 0;
+                counter <= 8'b0;
                 baud_tickx16 <= 1'b1;
             end
         

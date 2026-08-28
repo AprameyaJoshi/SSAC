@@ -35,7 +35,7 @@ module shift_reg(
         begin
             rx_byte <= 8'b0;
             byte_ready <= 1'b0;
-            i <= 1'b0; 
+            i <= 3'b0; 
         end
         else
         begin
