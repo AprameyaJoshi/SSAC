@@ -23,18 +23,24 @@
 module fsm(
 input clk,rst,
 input [7:0]fifo_data,
-input fifo_empty,rd_en,
-output reg pkt_valid,
+input fifo_empty,
+output reg pkt_valid,rd_en,
 output reg [7:0]chk_sum=0,
 output reg [7:0]pkt_len,
 output reg pkt_data_full=0,
 output reg [7:0]byte_out=0
 );  
 
-integer i=0,j,k,z=0;
+integer i=0,j,k=0,y=0,z=0;
 reg [2:0]state,n_state;
 reg [7:0]pkt_data[0:15];
-reg [7:0]pkt_out[0:15];
+reg busyA=0,busyB=0;
+reg emptyA=0,emptyB=0;
+reg active_buf=0;
+reg draining=0; 
+reg [7:0]lenA=0,lenB=0; 
+reg [7:0]buffA[0:15];
+reg [7:0]buffB[0:15];
 reg [7:0]calc_chk_sum=0,end_byte=0;
 
 parameter idle=3'b000;
@@ -50,16 +56,20 @@ begin
         pkt_valid<=0;
         pkt_len<=0;
         byte_out<=8'h00;
+        //rd_en<=0;
         calc_chk_sum<=8'h00;
-        //busy<=1'b0;
         for(j=0;j<=4'hF;j=j+1'b1)
+        begin
             pkt_data[j]<=0;
-            pkt_out[j]<=0;
+            buffA[j]<=0;
+            buffB[j]<=0;
+        end
         state<=idle;
     end
     
     else
     begin
+        //rd_en<=1;
         state<=n_state;
        // pkt_valid=1'b0;
         
@@ -75,7 +85,7 @@ begin
                     end
                     else
                         pkt_len<=fifo_data;   
-                end
+                end 
             end
                    
             read_data:
@@ -95,48 +105,108 @@ begin
                     
             checksum_calc:
             begin
-                end_byte<=fifo_data; 
+                if(!fifo_empty)
+                begin
+                    if(chk_sum==calc_chk_sum)
+                        end_byte<=fifo_data;
+                 
+                    else
+                    begin
+                        $display("Data invalid.Failed in checksum.");
+                        calc_chk_sum<=0;
+                        i<=0;
+                    end
+                end
             end
                     
             read_end:
             begin
-                if(end_byte==8'hFF)
+                if(!fifo_empty)
                 begin
-                    pkt_valid<=1'b1;
-                    i<=1'b0;
-                    for(k=0;k<pkt_len;k=k+1)
-                        pkt_out[k]<=pkt_data[k];
-                    calc_chk_sum<=8'h00; 
-                end
-                else
-                begin
-                    $display("Packet has no end.Invalid packet."); 
-                    i<=0;
+                    if(end_byte==8'hFF)
+                    begin
+                        //pkt_valid<=1'b1;
+                        i<=1'b0;
+                        calc_chk_sum<=8'h00;
+                        if(!busyA)
+                        begin
+                            busyA<=1'b1;
+                            lenA<=pkt_len;
+                            //outA<=1'b1;
+                            for(k=0;k<pkt_len;k=k+1)
+                            begin
+                                buffA[k]<=pkt_data[k];
+                            end  
+                        end    
+                        else if(!busyB)
+                        begin
+                            busyB<=1'b1;
+                            lenB<=pkt_len;
+                            //outB<=1'b1;
+                            for(k=0;k<pkt_len;k=k+1)
+                            begin
+                                buffB[k]<=pkt_data[k];
+                            end  
+                        end
+                   end
+                    else
+                    begin
+                        $display("Packet has no end.Invalid packet."); 
+                        calc_chk_sum<=0;
+                        i<=0;
+                    end
                 end                                  
             end
         endcase 
         
-        //if(busy)
-        //begin
-            if(pkt_valid==1'b1)
-            begin
-                byte_out<=pkt_out[z];
-                z<=z+1'b1;
-                if(z==pkt_len)
-                begin
-                    //pkt_len<=8'h00;
-                    pkt_valid<=1'b0;
-                    end_byte<=8'h00;
-                    byte_out<=8'h00;
-                    //calc_chk_sum<=8'h00;
-                    z<=1'b0; 
-                    for(j=0;j<=4'hF;j=j+1'b1)
-                        pkt_out[j]<=8'h00;  
-                   // busy=1'b0;    
-                end
-            end 
-        //end
+    if(!draining) //this is phase 1 - to check the free buffer
+    begin
+        if(busyA)
+        begin
+            draining<=1;
+            active_buf<=0;
+            z<=0;
+        end
+        else if(busyB)
+        begin
+            draining<=1;
+            active_buf<=1;
+            z<=0;
+        end
     end
+    
+    else //this is phase 2 - drain out the active buffer
+    begin
+        case(active_buf)
+        0:  begin
+                pkt_valid<=1'b1;
+                byte_out<=buffA[z];
+                z<=z+1'b1;
+                if(z==lenA)
+                begin
+                    draining<=0;
+                    busyA<=0;
+                    pkt_valid<=1'b0;
+                end
+                    
+            end
+            
+        1:  begin
+                pkt_valid<=1'b1;
+                byte_out<=buffB[z];
+                z<=z+1'b1;
+                if(z==lenB)
+                begin
+                    draining<=0;
+                    busyB<=0;
+                    pkt_valid<=1'b0;
+                end
+            end  
+        endcase
+    end
+    end   
+        
+    //end
 end
 always @(*)
 begin
@@ -145,11 +215,13 @@ begin
     case(state)
         idle: //idle state -> will check for the fifo_empty and rd_en signals. Also checks for the header byte.
         begin
-            if(!fifo_empty && rd_en /*&& !busy*/)
+            if(!fifo_empty)
+            begin
                 if(fifo_data==8'hAA) 
-                    n_state=read_len;              
-            else
-                n_state=idle;  
+                    n_state=read_len;
+                else
+                    n_state=idle;  
+            end
         end
              
         read_len://read_len state -> reads the number of data present in a particular packet.
@@ -176,31 +248,35 @@ begin
                         pkt_data_full=1'b1;
                     n_state=checksum_calc;    
                 end
+//                else
+//                    n_state=idle;
             end
-            else
-                n_state=idle;
         end
                   
         checksum_calc:// read_checksum state -> reads the checksum data. Checks if the calculated checksum is equal to the received checksum data.
         begin 
-            if(chk_sum==calc_chk_sum)
-                n_state=read_end;
-            else
+            if(!fifo_empty)
             begin
-                $display("Data invalid.Failed in checksum.");  
-                calc_chk_sum=0;
-                i<=0;                            
-                n_state=idle;
+                if(chk_sum==calc_chk_sum)
+                    n_state=read_end;
+                else
+                begin                              
+                    n_state=idle;
+                end
             end
         end 
                               
         read_end:// read_end -> reads the end of the packet.
         begin
-            if(fifo_data==8'hAA)
-                n_state=read_len;
-            else
-                n_state=idle;                    
+            if(!fifo_empty)
+            begin
+                if(fifo_data==8'hAA)
+                    n_state=read_len;
+                else
+                    n_state=idle; 
+            end                   
         end             
-    endcase  
+    endcase 
+     
 end
 endmodule

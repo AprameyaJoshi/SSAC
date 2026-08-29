@@ -22,13 +22,14 @@
 module fsm_tb;
 reg clk,rst;
 reg [7:0]fifo_data;
-reg fifo_empty,rd_en;
+reg fifo_empty;
+wire rd_en;
 wire pkt_valid;
 wire [7:0]chk_sum;
 wire [7:0]pkt_len;
 wire pkt_data_full;
 wire [7:0]byte_out;
-//wire busy;
+wire valid;
 
 fsm dut(
         .clk(clk),
@@ -41,55 +42,75 @@ fsm dut(
         .pkt_len(pkt_len),
         .pkt_data_full(pkt_data_full),
         .byte_out(byte_out)
-        //.busy(busy)
+        
         );
 
-always #5 clk=~clk;
+always #10 clk=~clk;
 initial begin
-clk=0;rst=0;fifo_empty=1;rd_en=0;
-#10 rst=1;rd_en=1;fifo_empty=0;
+clk=0;rst=0;fifo_empty=1;
+#20 rst=1;fifo_empty=0;
 @(posedge clk)
 begin
-#10 fifo_data=8'h10;
+#20 fifo_data=8'h10;
+ 
+#20 fifo_data=8'hAA;
+#20 fifo_data=8'd3;
+#20 fifo_data=8'h11;
+#20 fifo_data=8'h99;
+#20 fifo_data=8'h20;
+#20 fifo_data=8'hCA;
+#20 fifo_data=8'hFF;
+ 
+#20 fifo_data=8'h26;
+#20 fifo_data=8'h33;
+ 
+#20 fifo_data=8'hAA;
+#20 fifo_data=8'd15;
+#20 fifo_data=8'h1;
+#20 fifo_data=8'h2;
+#20 fifo_data=8'h3;
+#20 fifo_data=8'h4;
+#20 fifo_data=8'h5;
+#20 fifo_data=8'h6;
+#20 fifo_data=8'h7;
+#20 fifo_data=8'h8;
+#20 fifo_data=8'h9;
+#20 fifo_data=8'h10;
+#20 fifo_data=8'h11;
+#20 fifo_data=8'h12;
+#20 fifo_data=8'h13;
+#20 fifo_data=8'h14;
+#20 fifo_data=8'h15;
+#20 fifo_data=8'h9C;
+#20 fifo_data=8'hFF;
 
-#10 fifo_data=8'hAA;
-#10 fifo_data=8'd3;
-#10 fifo_data=8'h11;
-#10 fifo_data=8'h99;
-#10 fifo_data=8'h20;
-#10 fifo_data=8'hCA;
-#10 fifo_data=8'hFF;
+//#20 fifo_data=8'hAA;
+//#20 fifo_data=8'd1;
+//#20 fifo_data=8'h11;
+//#20 fifo_data=8'h11;
+//#20 fifo_data=8'hFF;
+ 
+#20 fifo_data=8'hAA;
+#20 fifo_data=8'd5;
+#20 fifo_data=8'hEE;
+#20 fifo_data=8'h34;
+#20 fifo_data=8'h21;
+#20 fifo_data=8'h90;
+#20 fifo_data=8'hAE;
+#20 fifo_data=8'h81;
+#20 fifo_data=8'hFF;
+ 
+#20 fifo_data=8'h89;
+#20 fifo_data=8'h12;
+ 
+#20 fifo_data=8'hAA;
+#20 fifo_data=8'd2;
+#20 fifo_data=8'h18;
+#20 fifo_data=8'h60;
+#20 fifo_data=8'h78;
+#20 fifo_data=8'hFF;
 
-#10 fifo_data=8'h26;
-#10 fifo_data=8'h33;
-
-#10 fifo_data=8'hAA;
-#10 fifo_data=8'd4;
-#10 fifo_data=8'h33;
-#10 fifo_data=8'h16;
-#10 fifo_data=8'hEA;
-#10 fifo_data=8'h40;
-#10 fifo_data=8'h73;
-#10 fifo_data=8'hFF;
-
-#10 fifo_data=8'hAA;
-#10 fifo_data=8'd2;
-#10 fifo_data=8'hEE;
-#10 fifo_data=8'h34;
-#10 fifo_data=8'h22;
-#10 fifo_data=8'hFF;
-
-#10 fifo_data=8'h89;
-#10 fifo_data=8'h12;
-
-#10 fifo_data=8'hAA;
-#10 fifo_data=8'd2;
-#10 fifo_data=8'h18;
-#10 fifo_data=8'h60;
-#10 fifo_data=8'h78;
-#10 fifo_data=8'hFF;
-
-#100 $finish;
+#500 $finish;
 end
 end
 endmodule
