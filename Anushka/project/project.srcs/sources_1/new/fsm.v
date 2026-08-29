@@ -56,7 +56,7 @@ begin
         pkt_valid<=0;
         pkt_len<=0;
         byte_out<=8'h00;
-        //rd_en<=0;
+        rd_en<=0;
         calc_chk_sum<=8'h00;
         for(j=0;j<=4'hF;j=j+1'b1)
         begin
@@ -69,7 +69,7 @@ begin
     
     else
     begin
-        //rd_en<=1;
+        rd_en<=1;
         state<=n_state;
        // pkt_valid=1'b0;
         
