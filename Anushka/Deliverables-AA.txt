@@ -10,9 +10,4 @@ tb/
 └── tb_rx_fifo.v
 
 
-Sir, I am validating a packet if it has :
-1. a valid header byte.
-2. a byte that provides number of data that will be incoming in the next clock cycles. 
-3. data bytes. 
-4. a checksum byte 
-5. a valid end byte.  
+  
