@@ -71,20 +71,19 @@ begin
     begin
         rd_en<=1;
         state<=n_state;
-       // pkt_valid=1'b0;
         
         case(state)   
             read_len: 
             begin
                 if(!fifo_empty)
                 begin
-                    if(fifo_data>5'd15)
+                    if(fifo_data>5'd14)
                     begin
                         $display("Number of data incoming is greater than the storage space available.");
                         i<=0;
                     end
                     else
-                        pkt_len<=fifo_data;   
+                        pkt_len<=fifo_data;
                 end 
             end
                    
@@ -96,10 +95,10 @@ begin
                     begin
                         pkt_data[i]<=fifo_data; 
                         calc_chk_sum<=calc_chk_sum+fifo_data;
-                        i<=i+1'b1;
+                        i<=i+1'b1;                                            
                     end
                     if(i==pkt_len)
-                        chk_sum<=fifo_data; 
+                        chk_sum<=fifo_data;   
                 end    
             end
                     
@@ -109,7 +108,6 @@ begin
                 begin
                     if(chk_sum==calc_chk_sum)
                         end_byte<=fifo_data;
-                 
                     else
                     begin
                         $display("Data invalid.Failed in checksum.");
@@ -125,30 +123,32 @@ begin
                 begin
                     if(end_byte==8'hFF)
                     begin
-                        //pkt_valid<=1'b1;
+                        k<=1'b0;
                         i<=1'b0;
                         calc_chk_sum<=8'h00;
                         if(!busyA)
                         begin
                             busyA<=1'b1;
                             lenA<=pkt_len;
-                            //outA<=1'b1;
-                            for(k=0;k<pkt_len;k=k+1)
+                            buffA[k]<=pkt_len;
+                            k=k+1'b1;
+                            for(k=1'b1;k<=pkt_len;k=k+1)
                             begin
-                                buffA[k]<=pkt_data[k];
+                                buffA[k]<=pkt_data[k-1'b1];
                             end  
                         end    
                         else if(!busyB)
                         begin
                             busyB<=1'b1;
                             lenB<=pkt_len;
-                            //outB<=1'b1;
-                            for(k=0;k<pkt_len;k=k+1)
+                            buffB[k]<=pkt_len;
+                            k=k+1'b1;
+                            for(k=1'b1;k<=pkt_len;k=k+1)
                             begin
-                                buffB[k]<=pkt_data[k];
+                                buffB[k]<=pkt_data[k-1'b1];
                             end  
                         end
-                   end
+                    end
                     else
                     begin
                         $display("Packet has no end.Invalid packet."); 
@@ -182,7 +182,7 @@ begin
                 pkt_valid<=1'b1;
                 byte_out<=buffA[z];
                 z<=z+1'b1;
-                if(z==lenA)
+                if(z==lenA+1'b1)
                 begin
                     draining<=0;
                     busyA<=0;
@@ -195,7 +195,7 @@ begin
                 pkt_valid<=1'b1;
                 byte_out<=buffB[z];
                 z<=z+1'b1;
-                if(z==lenB)
+                if(z==lenB+1'b1)
                 begin
                     draining<=0;
                     busyB<=0;
@@ -205,9 +205,9 @@ begin
         endcase
     end
     end   
-        
-    //end
 end
+
+
 always @(*)
 begin
     n_state=state;
@@ -228,7 +228,7 @@ begin
         begin
             if(!fifo_empty)
             begin
-                if(fifo_data>5'd15)
+                if(fifo_data>5'd14)
                     n_state=idle;
                 else
                     n_state=read_data; 

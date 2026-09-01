@@ -29,7 +29,6 @@ wire [7:0]chk_sum;
 wire [7:0]pkt_len;
 wire pkt_data_full;
 wire [7:0]byte_out;
-wire valid;
 
 fsm dut(
         .clk(clk),
@@ -65,8 +64,8 @@ begin
 #20 fifo_data=8'h33;
  
 #20 fifo_data=8'hAA;
-#20 fifo_data=8'd15;
-#20 fifo_data=8'h1;
+#20 fifo_data=8'd14;
+//#20 fifo_data=8'h1;
 #20 fifo_data=8'h2;
 #20 fifo_data=8'h3;
 #20 fifo_data=8'h4;
@@ -81,14 +80,14 @@ begin
 #20 fifo_data=8'h13;
 #20 fifo_data=8'h14;
 #20 fifo_data=8'h15;
-#20 fifo_data=8'h9C;
+#20 fifo_data=8'h9B;
 #20 fifo_data=8'hFF;
 
-//#20 fifo_data=8'hAA;
-//#20 fifo_data=8'd1;
-//#20 fifo_data=8'h11;
-//#20 fifo_data=8'h11;
-//#20 fifo_data=8'hFF;
+#20 fifo_data=8'hAA;
+#20 fifo_data=8'd1;
+#20 fifo_data=8'h88;
+#20 fifo_data=8'h88;
+#20 fifo_data=8'hFF;
  
 #20 fifo_data=8'hAA;
 #20 fifo_data=8'd5;
