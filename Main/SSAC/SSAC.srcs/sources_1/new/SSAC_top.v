@@ -23,8 +23,9 @@
 module SSAC_top(
     input uart_clk, sys_clk, rst,
     input rx_in,
-    output [7:0] cdc_byte_out,
-    output cdc_pkt_valid 
+    input rd_en,
+    output [7:0] mem_byte_out,
+    output mem_full, mem_empty
     
     );
     
@@ -39,6 +40,8 @@ module SSAC_top(
     wire [7:0] rx_fifo_out;
     wire fsm_pkt_valid;
     wire [7:0]fsm_byte_out;
+    wire [7:0] cdc_byte_out;
+    wire cdc_pkt_valid;
     
     baud_gen ticks (
         .uart_clk(uart_clk),
@@ -94,6 +97,17 @@ module SSAC_top(
         .data_valid(fsm_pkt_valid),
         .data_out(cdc_byte_out),
         .data_out_valid(cdc_pkt_valid)
+        );
+        
+    mem_buff store(
+        .sys_clk(sys_clk),
+        .rst(rst),
+        .rd_en(rd_en),
+        .wr_en(cdc_pkt_valid),
+        .wr_data(cdc_byte_out),
+        .rd_out(mem_byte_out),
+        .empty(mem_empty),
+        .full(mem_full)
         );
   
 endmodule
