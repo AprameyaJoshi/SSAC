@@ -86,7 +86,8 @@ module SSAC_top(
         .fifo_empty(rx_fifo_empty),
         .rd_en(fsm_read_en),
         .pkt_valid(fsm_pkt_valid),
-        .byte_out(fsm_byte_out)
+        .byte_out(fsm_byte_out),
+        .end_signal(end_signal)
         );
         
     cdc inst2(

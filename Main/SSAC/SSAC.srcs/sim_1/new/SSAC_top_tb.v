@@ -138,9 +138,9 @@ module SSAC_top_tb;
         #8640;rx_in = 1; // STOP BIT
         
         #8640;rx_in = 0; // START BIT
-        #8640;rx_in = 0; //LEN byte: 00000010
-        #8640;rx_in = 1;
+        #8640;rx_in = 0; //LEN byte: 00000100
         #8640;rx_in = 0;
+        #8640;rx_in = 1;
         #8640;rx_in = 0;
         #8640;rx_in = 0;
         #8640;rx_in = 0;
@@ -148,49 +148,71 @@ module SSAC_top_tb;
         #8640;rx_in = 0;
         #8640;rx_in = 1; //STOP BIT
         
-//        #8640;rx_in = 0; // START BIT
-//        #8640;rx_in = 0; //DATA byte: 11001100
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1; // VALID STOP BIT
+        #8640;rx_in = 0; // START BIT
+        #8640;rx_in = 1; //DATA byte: 11001111
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1; // VALID STOP BIT
         
-//        #8640;rx_in = 0; //START BIT
-//        #8640;rx_in = 0; //DATA byte: 1000000
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1; // VALID STOP BIT
+        #8640;rx_in = 0; //START BIT
+        #8640;rx_in = 0; //DATA byte: 1000000
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1; // VALID STOP BIT
         
-//        #8640;rx_in = 0; // START BIT
-//        #8640;rx_in = 0; //CHK_SUM byte: 01001100
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 0;
-//        #8640;rx_in = 1; // VALID STOP BIT
+        #8640;rx_in = 0; // START BIT
+        #8640;rx_in = 1; //DATA byte: 11001101
+        #8640;rx_in = 0;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1; // VALID STOP BIT
         
-//        #8640;rx_in = 0; // START BIT
-//        #8640;rx_in = 1; //END byte: 11111111
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1;
-//        #8640;rx_in = 1; // VALID STOP BIT
+        #8640;rx_in = 0; // START BIT
+        #8640;rx_in = 0; //DATA byte: 00011100
+        #8640;rx_in = 0;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 1; // VALID STOP BIT
+        
+        #8640;rx_in = 0; // START BIT
+        #8640;rx_in = 0; //CHK_SUM byte: 00111000
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 0;
+        #8640;rx_in = 0;
+        #8640;rx_in = 1; // VALID STOP BIT
+        
+        #8640;rx_in = 0; // START BIT
+        #8640;rx_in = 1; //END byte: 11111111
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1;
+        #8640;rx_in = 1; // VALID STOP BIT
         
 //        #8640;$finish;
     end

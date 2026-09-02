@@ -28,14 +28,14 @@ output reg pkt_valid,rd_en,
 output reg [7:0]chk_sum=0,
 output reg [7:0]pkt_len,
 output reg pkt_data_full=0,
-output reg [7:0]byte_out=0
+output reg [7:0]byte_out=0,
+output reg end_signal=0
 );  
 
 integer i=0,j,k=0,y=0,z=0;
 reg [2:0]state,n_state;
 reg [7:0]pkt_data[0:15];
 reg busyA=0,busyB=0;
-reg emptyA=0,emptyB=0;
 reg active_buf=0;
 reg draining=0; 
 reg [7:0]lenA=0,lenB=0; 
@@ -77,7 +77,7 @@ begin
             begin
                 if(!fifo_empty)
                 begin
-                    if(fifo_data>5'd14)
+                    if(fifo_data>5'd15)
                     begin
                         $display("Number of data incoming is greater than the storage space available.");
                         i<=0;
@@ -131,7 +131,6 @@ begin
                             busyA<=1'b1;
                             lenA<=pkt_len;
                             buffA[k]<=pkt_len;
-                            k=k+1'b1;
                             for(k=1'b1;k<=pkt_len;k=k+1)
                             begin
                                 buffA[k]<=pkt_data[k-1'b1];
@@ -142,7 +141,6 @@ begin
                             busyB<=1'b1;
                             lenB<=pkt_len;
                             buffB[k]<=pkt_len;
-                            k=k+1'b1;
                             for(k=1'b1;k<=pkt_len;k=k+1)
                             begin
                                 buffB[k]<=pkt_data[k-1'b1];
@@ -182,11 +180,15 @@ begin
                 pkt_valid<=1'b1;
                 byte_out<=buffA[z];
                 z<=z+1'b1;
+                if(z==lenA)
+                    end_signal=1'b1;
                 if(z==lenA+1'b1)
                 begin
                     draining<=0;
                     busyA<=0;
                     pkt_valid<=1'b0;
+                    byte_out<=0;
+                    end_signal=0;
                 end
                     
             end
@@ -195,11 +197,15 @@ begin
                 pkt_valid<=1'b1;
                 byte_out<=buffB[z];
                 z<=z+1'b1;
+                if(z==lenA)
+                    end_signal=1'b1;
                 if(z==lenB+1'b1)
                 begin
                     draining<=0;
                     busyB<=0;
                     pkt_valid<=1'b0;
+                    byte_out<=0;
+                    end_signal=0;
                 end
             end  
         endcase
@@ -228,7 +234,7 @@ begin
         begin
             if(!fifo_empty)
             begin
-                if(fifo_data>5'd14)
+                if(fifo_data>5'd15)
                     n_state=idle;
                 else
                     n_state=read_data; 
