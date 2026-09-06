@@ -77,7 +77,7 @@ module uart_rx(
                         end            
             
                 START:  begin
-                        if(tick_counter == 7 && baud_tickx16)
+                        if(tick_counter == 4'd7 && baud_tickx16)
                             if(rx_in == 0)
                             begin
                                 tick_counter <= 4'b0;

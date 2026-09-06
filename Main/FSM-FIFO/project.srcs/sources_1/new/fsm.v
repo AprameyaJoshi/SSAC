@@ -32,7 +32,7 @@ output reg [7:0]byte_out=0,
 output reg end_signal=0
 );  
 
-integer i=0,j,k=0,y=0,z=0;
+reg [5:0] i=0,j,k=0,y=0,z=0;
 reg [2:0]state,n_state;
 reg [7:0]pkt_data[0:15];
 reg busyA=0,busyB=0;
