@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 29.08.2026 15:29:23
+// Create Date: 15.09.2026 19:22:14
 // Design Name: 
 // Module Name: SSAC_top
 // Project Name: 
@@ -22,93 +22,31 @@
 
 module SSAC_top(
     input uart_clk, sys_clk, rst,
-    input rx_in,
-    input rd_en,
-    output [7:0] mem_byte_out,
-    output mem_full, mem_empty
-    
+    input [7:0] tx_byte,
+    input tx_fifo_wr_en,
+    input mem_rd_en,
+    output [7:0] rx_mem_byte_out,
+    output rx_mem_full, rx_mem_empty
     );
     
-    wire baud_tickx16;
-    wire shift_en;
-    wire rx_out;
-    wire uart_byte_ready;
-    wire [7:0]uart_byte_out;
-    wire byte_valid;
-    wire fsm_read_en;
-    wire rx_fifo_empty;
-    wire [7:0] rx_fifo_out;
-    wire fsm_pkt_valid;
-    wire [7:0]fsm_byte_out;
-    wire [7:0] cdc_byte_out;
-    wire cdc_pkt_valid;
+    wire tx_out;
     
-    baud_gen ticks (
-        .uart_clk(uart_clk),
+    SSAC_TX_top transmit(
+        .uart_tx_clk(uart_clk),
         .rst(rst),
-        .baud_tickx16(baud_tickx16)
+        .tx_in(tx_byte),
+        .fifo_wr_en(tx_fifo_wr_en),
+        .tx_out(tx_out)
         );
         
-    uart_rx sample (
-        .uart_clk(uart_clk),
-        .rst(rst),
-        .baud_tickx16(baud_tickx16),
-        .rx_in(rx_in),
-        .rx_out(rx_out),
-        .shift_en(shift_en),
-        .byte_valid(byte_valid)
-        );
-        
-    shift_reg shift (
-        .uart_clk(uart_clk),
-        .byte_valid(byte_valid),
-        .rst(rst),
-        .rx_out(rx_out),
-        .shift_en(shift_en),
-        .rx_byte(uart_byte_out),
-        .byte_ready(uart_byte_ready)
-        );
-        
-    rx_fifo inst0(
-        .clk(uart_clk),
-        .rst(rst),
-        .rd_en(fsm_read_en),
-        .wr_en(uart_byte_ready),
-        .data_in(uart_byte_out),
-        .empty(rx_fifo_empty),
-        .fifo_data(rx_fifo_out)
-        );
-
-    fsm inst1(
-        .clk(uart_clk),
-        .rst(rst),
-        .fifo_data(rx_fifo_out),
-        .fifo_empty(rx_fifo_empty),
-        .rd_en(fsm_read_en),
-        .pkt_valid(fsm_pkt_valid),
-        .byte_out(fsm_byte_out),
-        .end_signal(end_signal)
-        );
-        
-    cdc inst2(
-        .wr_clk(uart_clk),
-        .rd_clk(sys_clk),
-        .rst_n(rst),
-        .data_in(fsm_byte_out),
-        .data_valid(fsm_pkt_valid),
-        .data_out(cdc_byte_out),
-        .data_out_valid(cdc_pkt_valid)
-        );
-        
-    mem_buff store(
+    SSAC_RX_top receive(
+        .uart_rx_clk(uart_clk),
         .sys_clk(sys_clk),
         .rst(rst),
-        .rd_en(rd_en),
-        .wr_en(cdc_pkt_valid),
-        .wr_data(cdc_byte_out),
-        .rd_out(mem_byte_out),
-        .empty(mem_empty),
-        .full(mem_full)
+        .rx_in(tx_out),
+        .rd_en(mem_rd_en),
+        .mem_byte_out(rx_mem_byte_out),
+        .mem_full(rx_mem_full),
+        .mem_empty(rx_mem_empty)
         );
-  
 endmodule
