@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module mem_buff_rx(
+module rx_mem_buff(
     input sys_clk, rst,
     input rd_en,
     input wr_en,

@@ -20,28 +20,27 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module fsm_rx(
+module rx_fsm(
 input clk,rst,
 input [7:0]fifo_data,
 input fifo_empty,
 output reg pkt_valid,rd_en,
-output reg [7:0]chk_sum=0,
+output reg [7:0]chk_sum,
 output reg [7:0]pkt_len,
-output reg pkt_data_full=0,
-output reg [7:0]byte_out=0
+output reg [7:0]byte_out,
+output reg end_signal
 );  
 
-integer i=0,j,k=0,y=0,z=0;
+reg [4:0] i,j,k,z;
 reg [2:0]state,n_state;
 reg [7:0]pkt_data[0:15];
-reg busyA=0,busyB=0;
-reg emptyA=0,emptyB=0;
-reg active_buf=0;
-reg draining=0; 
-reg [7:0]lenA=0,lenB=0; 
+reg busyA,busyB;
+reg active_buf;
+reg draining; 
+reg [7:0]lenA,lenB; 
 reg [7:0]buffA[0:15];
 reg [7:0]buffB[0:15];
-reg [7:0]calc_chk_sum=0,end_byte=0;
+reg [7:0]calc_chk_sum,end_byte;
 
 parameter idle=3'b000;
 parameter read_len=3'b001;
@@ -53,11 +52,25 @@ always @(posedge clk)
 begin
     if(!rst)
     begin
+        i<=0;
+        j<=0;
+        k<=0;
+        z<=0;
         pkt_valid<=0;
         pkt_len<=0;
         byte_out<=8'h00;
         rd_en<=0;
         calc_chk_sum<=8'h00;
+        busyA<=0;
+        busyB<=0;
+        active_buf<=0;
+        draining<=0;
+        lenA<=0;
+        lenB<=0;
+        end_byte<=0;
+        chk_sum<=0;
+        byte_out<=0;
+        end_signal<=0;
         for(j=0;j<=4'hF;j=j+1'b1)
         begin
             pkt_data[j]<=0;
@@ -71,7 +84,6 @@ begin
     begin
         rd_en<=1;
         state<=n_state;
-       // pkt_valid=1'b0;
         
         case(state)   
             read_len: 
@@ -84,7 +96,7 @@ begin
                         i<=0;
                     end
                     else
-                        pkt_len<=fifo_data;   
+                        pkt_len<=fifo_data;
                 end 
             end
                    
@@ -96,10 +108,10 @@ begin
                     begin
                         pkt_data[i]<=fifo_data; 
                         calc_chk_sum<=calc_chk_sum+fifo_data;
-                        i<=i+1'b1;
+                        i<=i+1'b1;                                            
                     end
                     if(i==pkt_len)
-                        chk_sum<=fifo_data; 
+                        chk_sum<=fifo_data;   
                 end    
             end
                     
@@ -109,7 +121,6 @@ begin
                 begin
                     if(chk_sum==calc_chk_sum)
                         end_byte<=fifo_data;
-                 
                     else
                     begin
                         $display("Data invalid.Failed in checksum.");
@@ -121,34 +132,35 @@ begin
                     
             read_end:
             begin
-                if(!fifo_empty)
+                //if(!fifo_empty)
                 begin
                     if(end_byte==8'hFF)
                     begin
-                        //pkt_valid<=1'b1;
+                        k<=1'b0;
                         i<=1'b0;
                         calc_chk_sum<=8'h00;
                         if(!busyA)
                         begin
                             busyA<=1'b1;
                             lenA<=pkt_len;
-                            //outA<=1'b1;
-                            for(k=0;k<pkt_len;k=k+1)
+                            buffA[0]<=pkt_len;
+                            for(k=1'b1;k<=pkt_len;k=k+1)
                             begin
-                                buffA[k]<=pkt_data[k];
+                                buffA[k]<=pkt_data[k-1'b1];
                             end  
                         end    
                         else if(!busyB)
                         begin
                             busyB<=1'b1;
                             lenB<=pkt_len;
-                            //outB<=1'b1;
-                            for(k=0;k<pkt_len;k=k+1)
+                            buffB[0]<=pkt_len;
+                            for(k=1'b1;k<=pkt_len;k=k+1)
                             begin
-                                buffB[k]<=pkt_data[k];
+                                buffB[k]<=pkt_data[k-1'b1];
                             end  
                         end
-                   end
+                        end_byte<=0;
+                    end
                     else
                     begin
                         $display("Packet has no end.Invalid packet."); 
@@ -183,12 +195,16 @@ begin
                 byte_out<=buffA[z];
                 z<=z+1'b1;
                 if(z==lenA)
+                    end_signal=1'b1;
+                if(z==lenA+1'b1)
                 begin
                     draining<=0;
                     busyA<=0;
                     pkt_valid<=1'b0;
+                    end_signal<=0;
+                    for(j=0;j<=4'd15;j=j+1)
+                        buffA[j]=0;
                 end
-                    
             end
             
         1:  begin
@@ -196,18 +212,23 @@ begin
                 byte_out<=buffB[z];
                 z<=z+1'b1;
                 if(z==lenB)
+                    end_signal=1'b1;
+                if(z==lenB+1'b1)
                 begin
                     draining<=0;
                     busyB<=0;
                     pkt_valid<=1'b0;
+                    end_signal<=0;
+                    for(j=0;j<=4'd15;j=j+1)
+                        buffB[j]=0;
                 end
             end  
         endcase
     end
     end   
-        
-    //end
 end
+
+
 always @(*)
 begin
     n_state=state;
@@ -243,11 +264,7 @@ begin
                 if(i<pkt_len)
                     n_state=read_data;
                 if(i==pkt_len)
-                begin
-                    if(i==(5'd16))
-                        pkt_data_full=1'b1;
                     n_state=checksum_calc;    
-                end
 //                else
 //                    n_state=idle;
             end
@@ -268,7 +285,7 @@ begin
                               
         read_end:// read_end -> reads the end of the packet.
         begin
-            if(!fifo_empty)
+            //if(!fifo_empty)
             begin
                 if(fifo_data==8'hAA)
                     n_state=read_len;

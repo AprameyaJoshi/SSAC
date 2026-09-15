@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module shift_reg_rx(
+module rx_shift_reg(
     input uart_clk,rst, byte_valid,
     input rx_out,shift_en,
     output reg [7:0] rx_byte,

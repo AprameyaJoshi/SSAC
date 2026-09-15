@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module baud_gen_rx #(
+module rx_baud_gen #(
     parameter clk_freq = 50_000_000,
     parameter baud_rate = 115200,
     parameter oversample = 16

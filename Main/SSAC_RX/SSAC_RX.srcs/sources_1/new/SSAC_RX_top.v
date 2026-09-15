@@ -43,13 +43,13 @@ module SSAC_RX_top(
     wire [7:0] cdc_byte_out;
     wire cdc_pkt_valid;
     
-    baud_gen_rx ticks (
+    rx_baud_gen ticks (
         .uart_clk(uart_clk),
         .rst(rst),
         .baud_tickx16(baud_tickx16)
         );
         
-    uart_rx sample (
+    rx_uart sample (
         .uart_clk(uart_clk),
         .rst(rst),
         .baud_tickx16(baud_tickx16),
@@ -59,7 +59,7 @@ module SSAC_RX_top(
         .byte_valid(byte_valid)
         );
         
-    shift_reg_rx shift (
+    rx_shift_reg shift (
         .uart_clk(uart_clk),
         .byte_valid(byte_valid),
         .rst(rst),
@@ -79,7 +79,7 @@ module SSAC_RX_top(
         .fifo_data(rx_fifo_out)
         );
 
-    fsm_rx inst1(
+    rx_fsm inst1(
         .clk(uart_clk),
         .rst(rst),
         .fifo_data(rx_fifo_out),
@@ -90,7 +90,7 @@ module SSAC_RX_top(
         .end_signal(end_signal)
         );
         
-    cdc_rx inst2(
+    rx_cdc inst2(
         .wr_clk(uart_clk),
         .rd_clk(sys_clk),
         .rst_n(rst),
@@ -100,7 +100,7 @@ module SSAC_RX_top(
         .data_out_valid(cdc_pkt_valid)
         );
         
-    mem_buff_rx store(
+    rx_mem_buff store(
         .sys_clk(sys_clk),
         .rst(rst),
         .rd_en(rd_en),
