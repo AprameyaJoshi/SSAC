@@ -72,7 +72,7 @@ module rx_uart(
                 
             case(state)
                 IDLE:   begin
-                            if(rx_in == 0)
+                            if(rx_in == 1'b0)
                                 tick_counter <= 4'b0;
                         end            
             
@@ -86,9 +86,9 @@ module rx_uart(
                         end
                         
                 DATA:   begin
-                            if(tick_counter == 15 && baud_tickx16)
+                            if(tick_counter == 4'd15 && baud_tickx16)
                             begin
-                                if(bit_counter <= 7)
+                                if(bit_counter <= 3'd7)
                                 begin
                                     rx_out <= rx_in;                                    
                                     shift_en <= 1'b1;
@@ -99,8 +99,8 @@ module rx_uart(
                         end
                         
                 STOP:   begin
-                            if(tick_counter == 15 && baud_tickx16)
-                                if(rx_in == 1)
+                            if(tick_counter == 4'd15 && baud_tickx16)
+                                if(rx_in == 1'b1)
                                 begin
                                     byte_valid <= 1'b1;
                                 end
@@ -118,7 +118,7 @@ module rx_uart(
          n_state = state;
          case(state)
                 IDLE:   begin
-                            if(rx_in == 0)
+                            if(rx_in == 1'b0)
                             begin
                                 n_state = START;
                             end
@@ -129,9 +129,9 @@ module rx_uart(
                         end
                         
                 START:  begin
-                            if(tick_counter == 7 && baud_tickx16)
+                            if(tick_counter == 4'd7 && baud_tickx16)
                             begin
-                                if(rx_in == 0)
+                                if(rx_in == 1'b0)
                                     n_state = DATA;
                                 else
                                     n_state = IDLE;
@@ -139,23 +139,23 @@ module rx_uart(
                         end
                         
                 DATA:   begin
-                            if(tick_counter == 15 && baud_tickx16)
-                                if(bit_counter == 7)
+                            if(tick_counter == 4'd15 && baud_tickx16)
+                                if(bit_counter == 3'd7)
                                     begin                                  
                                         n_state = STOP;
                                     end                                
                         end
                         
                 STOP:   begin
-                            if(tick_counter == 15 && baud_tickx16)
-                                if(rx_in == 1)
+                            if(tick_counter == 4'd15 && baud_tickx16)
+                                if(rx_in == 1'b1)
                                     n_state = IDLE;
                                 else
                                     n_state = ERR;
                         end
                 
                 ERR:begin
-                            if(rx_in == 1)
+                            if(rx_in == 1'b1)
                                 n_state = IDLE;
                         end
             endcase   

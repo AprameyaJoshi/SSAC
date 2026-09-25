@@ -52,30 +52,30 @@ always @(posedge clk)
 begin
     if(!rst)
     begin
-        i<=0;
-        j<=0;
-        k<=0;
-        z<=0;
-        pkt_valid<=0;
-        pkt_len<=0;
+        i<=5'b0;
+        j<=5'b0;
+        k<=5'b0;
+        z<=5'b0;
+        pkt_valid<=1'b0;
+        pkt_len<=8'b0;
         byte_out<=8'h00;
-        rd_en<=0;
+        rd_en<=1'b0;
         calc_chk_sum<=8'h00;
-        busyA<=0;
-        busyB<=0;
-        active_buf<=0;
-        draining<=0;
-        lenA<=0;
-        lenB<=0;
-        end_byte<=0;
-        chk_sum<=0;
-        byte_out<=0;
-        end_signal<=0;
+        busyA<=1'b0;
+        busyB<=1'b0;
+        active_buf<=1'b0;
+        draining<=1'b0;
+        lenA<=8'b0;
+        lenB<=8'b0;
+        end_byte<=8'b0;
+        chk_sum<=8'b0;
+        byte_out<=8'b0;
+        end_signal<=1'b0;
         for(j=0;j<=4'hF;j=j+1'b1)
         begin
-            pkt_data[j]<=0;
-            buffA[j]<=0;
-            buffB[j]<=0;
+            pkt_data[j]<=8'b0;
+            buffA[j]<=8'b0;
+            buffB[j]<=8'b0;
         end
         state<=idle;
     end
@@ -93,7 +93,7 @@ begin
                     if(fifo_data>5'd15)
                     begin
                         $display("Number of data incoming is greater than the storage space available.");
-                        i<=0;
+                        i<=5'b0;
                     end
                     else
                         pkt_len<=fifo_data;
@@ -124,8 +124,8 @@ begin
                     else
                     begin
                         $display("Data invalid.Failed in checksum.");
-                        calc_chk_sum<=0;
-                        i<=0;
+                        calc_chk_sum<=8'b0;
+                        i<=5'b0;
                     end
                 end
             end
@@ -144,7 +144,7 @@ begin
                             busyA<=1'b1;
                             lenA<=pkt_len;
                             buffA[0]<=pkt_len;
-                            for(k=1'b1;k<=pkt_len;k=k+1)
+                            for(k=1'b1;k<=pkt_len;k=k+1'b1)
                             begin
                                 buffA[k]<=pkt_data[k-1'b1];
                             end  
@@ -154,18 +154,18 @@ begin
                             busyB<=1'b1;
                             lenB<=pkt_len;
                             buffB[0]<=pkt_len;
-                            for(k=1'b1;k<=pkt_len;k=k+1)
+                            for(k=1'b1;k<=pkt_len;k=k+1'b1)
                             begin
                                 buffB[k]<=pkt_data[k-1'b1];
                             end  
                         end
-                        end_byte<=0;
+                        end_byte<=8'b0;
                     end
                     else
                     begin
                         $display("Packet has no end.Invalid packet."); 
-                        calc_chk_sum<=0;
-                        i<=0;
+                        calc_chk_sum<=8'b0;
+                        i<=5'b0;
                     end
                 end                                  
             end
@@ -175,15 +175,15 @@ begin
     begin
         if(busyA)
         begin
-            draining<=1;
-            active_buf<=0;
-            z<=0;
+            draining<=1'b1;
+            active_buf<=1'b0;
+            z<=5'b0;
         end
         else if(busyB)
         begin
-            draining<=1;
-            active_buf<=1;
-            z<=0;
+            draining<=1'b1;
+            active_buf<=1'b1;
+            z<=5'b0;
         end
     end
     
@@ -198,12 +198,12 @@ begin
                     end_signal=1'b1;
                 if(z==lenA+1'b1)
                 begin
-                    draining<=0;
-                    busyA<=0;
+                    draining<=1'b0;
+                    busyA<=1'b0;
                     pkt_valid<=1'b0;
-                    end_signal<=0;
-                    for(j=0;j<=4'd15;j=j+1)
-                        buffA[j]=0;
+                    end_signal<=1'b0;
+                    for(j=0;j<=4'd15;j=j+1'b1)
+                        buffA[j]=8'b0;
                 end
             end
             
@@ -215,12 +215,12 @@ begin
                     end_signal=1'b1;
                 if(z==lenB+1'b1)
                 begin
-                    draining<=0;
-                    busyB<=0;
+                    draining<=1'b0;
+                    busyB<=1'b0;
                     pkt_valid<=1'b0;
-                    end_signal<=0;
-                    for(j=0;j<=4'd15;j=j+1)
-                        buffB[j]=0;
+                    end_signal<=1'b0;
+                    for(j=0;j<=4'd15;j=j+1'b1)
+                        buffB[j]=8'b0;
                 end
             end  
         endcase

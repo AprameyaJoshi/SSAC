@@ -43,13 +43,13 @@ module SSAC_RX_top(
     wire [7:0] cdc_byte_out;
     wire cdc_pkt_valid;
     
-    rx_baud_gen ticks (
+    rx_baud_gen rx_ticks (
         .uart_clk(uart_rx_clk),
         .rst(rst),
         .baud_tickx16(baud_tickx16)
         );
         
-    rx_uart sample (
+    rx_uart rx_sample (
         .uart_clk(uart_rx_clk),
         .rst(rst),
         .baud_tickx16(baud_tickx16),
@@ -59,7 +59,7 @@ module SSAC_RX_top(
         .byte_valid(byte_valid)
         );
         
-    rx_shift_reg shift (
+    rx_shift_reg rx_shift (
         .uart_clk(uart_rx_clk),
         .byte_valid(byte_valid),
         .rst(rst),
@@ -69,7 +69,7 @@ module SSAC_RX_top(
         .byte_ready(uart_byte_ready)
         );
         
-    rx_fifo inst0(
+    rx_fifo rx_gate(
         .clk(uart_rx_clk),
         .rst(rst),
         .rd_en(fsm_read_en),
@@ -79,7 +79,7 @@ module SSAC_RX_top(
         .fifo_data(rx_fifo_out)
         );
 
-    rx_fsm inst1(
+    rx_fsm rx_validate(
         .clk(uart_rx_clk),
         .rst(rst),
         .fifo_data(rx_fifo_out),
@@ -89,7 +89,7 @@ module SSAC_RX_top(
         .byte_out(fsm_byte_out)
         );
         
-    rx_cdc inst2(
+    rx_cdc rx_crossing(
         .wr_clk(uart_rx_clk),
         .rd_clk(sys_clk),
         .rst_n(rst),
@@ -99,7 +99,7 @@ module SSAC_RX_top(
         .data_out_valid(cdc_pkt_valid)
         );
         
-    rx_mem_buff store(
+    rx_mem_buff rx_store(
         .sys_clk(sys_clk),
         .rst(rst),
         .rd_en(rd_en),

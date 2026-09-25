@@ -41,7 +41,7 @@ module rx_shift_reg(
         begin
             byte_ready <= 1'b0;
             if(shift_en)
-                if(i < 7)
+                if(i < 3'd7)
                 begin
                     rx_byte[i] <= rx_out;
                     i <= i+1'b1;
@@ -51,7 +51,7 @@ module rx_shift_reg(
                     rx_byte[i] <= rx_out;
                     i <= 1'b0;
                 end
-            else if (byte_valid == 1)
+            else if (byte_valid)
                  byte_ready <= 1'b1;
         end               
     end

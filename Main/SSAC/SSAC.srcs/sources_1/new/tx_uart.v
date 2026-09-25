@@ -79,14 +79,14 @@ module tx_uart(
                 DATA:   begin
                             if(tick_counter == 4'd15 && baud_tickx16)
                             begin
-                                if(bit_counter < 7)
+                                if(bit_counter < 3'd7)
                                 begin
                                     tx_receive <= 1'b1;
                                     tx_out <= tx_bit;
                                     bit_counter <= bit_counter + 1'b1;
                                 end
                                 
-                                else if(bit_counter == 7)
+                                else if(bit_counter == 3'd7)
                                 begin
                                     tx_out <= tx_bit;
                                     bit_counter <= bit_counter + 1'b1;
@@ -129,7 +129,7 @@ module tx_uart(
                         
                 DATA:   begin
                             if(tick_counter == 4'd15 && baud_tickx16)
-                                if(bit_counter == 7)
+                                if(bit_counter == 3'd7)
                                     begin                                  
                                         n_state = STOP;
                                     end                                

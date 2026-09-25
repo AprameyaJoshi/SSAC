@@ -61,20 +61,31 @@ module SSAC_top_tb;
         #20 tx_fifo_wr_en = 1'b1;
             tx_byte = 8'hAA;    // HEADER BYTE
         #20 tx_byte = 8'h02;    // LENGTH BYTE
-        #20 tx_byte = 8'h05;
+        #20 tx_byte = 8'h05;    // DATABYTES:
         #20 tx_byte = 8'hCA;
         #20 tx_byte = 8'hCF;    // CHECKSUM
         #20 tx_byte = 8'hFF;    // END BYTE
+        
         // PACKET:2
-        #20 tx_byte = 8'hAA;
-        #20 tx_byte = 8'h05;
-        #20 tx_byte = 8'h00;
+        
+        #20 tx_byte = 8'hAA;    // HEADER BYTE
+        #20 tx_byte = 8'h05;    // LENGTH BYTE
+        #20 tx_byte = 8'h00;    // DATA BYTES:
         #20 tx_byte = 8'h01;
         #20 tx_byte = 8'h02;
         #20 tx_byte = 8'h03;
         #20 tx_byte = 8'h04;
-        #20 tx_byte = 8'h0A;
+        #20 tx_byte = 8'h0A;    // CHECKSUM BYTE
         #20 tx_byte = 8'hff;
+        
+        // PACKET:3
+        
+        #20 tx_byte = 8'hAA;    // HEADER BYTE
+        #20 tx_byte = 8'h02;    //LENGTH BYTE
+        #20 tx_byte = 8'h08;    //DATA BYTES:
+        #20 tx_byte = 8'h02;
+        #20 tx_byte = 8'h0A;    //CHECKSUM BYTE
+        #20 tx_byte = 8'hff;    // END BYTE
         
         #20 tx_fifo_wr_en = 1'b0;
     end

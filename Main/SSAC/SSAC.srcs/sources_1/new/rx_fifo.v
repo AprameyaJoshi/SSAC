@@ -28,7 +28,8 @@ output [7:0]fifo_data
 );
 
 reg [7:0]mem[0:15];
-reg [3:0]rd_ptr,wr_ptr,cnt;
+reg [3:0]rd_ptr,wr_ptr;
+reg [5:0]cnt;
 
 always @(posedge clk)
 begin
@@ -53,7 +54,7 @@ begin
         end
     end
 end
-assign empty=(cnt==0)?1'b1:1'b0;
+assign empty=(cnt==5'd0)?1'b1:1'b0;
 assign full=(cnt==5'd16)?1'b1:1'b0;
 assign fifo_data=mem[rd_ptr];  
 endmodule
