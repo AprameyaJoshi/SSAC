@@ -40,7 +40,7 @@ module rx_shift_reg(
         else
         begin
             byte_ready <= 1'b0;
-            if(shift_en == 1)
+            if(shift_en)
                 if(i < 7)
                 begin
                     rx_byte[i] <= rx_out;

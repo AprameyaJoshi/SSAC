@@ -31,7 +31,7 @@ module tx_baud_gen #(
     );
     
     reg [7:0] counter;
-    localparam integer divisor = clk_freq/(baud_rate * oversample);
+    localparam integer divisor = clk_freq/(baud_rate * oversample); // DIVISOR = 27
     
     always @ (posedge uart_clk)
     begin

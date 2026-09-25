@@ -28,7 +28,7 @@ output [7:0]fifo_data
 );
 
 reg [7:0]mem[0:15];
-reg [3:0]rd_ptr=0,wr_ptr=0,cnt=0;
+reg [3:0]rd_ptr,wr_ptr,cnt;
 
 always @(posedge clk)
 begin

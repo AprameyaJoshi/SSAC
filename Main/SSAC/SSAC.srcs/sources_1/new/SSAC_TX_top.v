@@ -29,7 +29,7 @@ module SSAC_TX_top(
     );
     
     wire baud_tickx16_tx;
-    wire tx_recieve;
+    wire tx_receive;
     wire tx_fifo_empty;
     wire shift_out;
     wire shift_receive;

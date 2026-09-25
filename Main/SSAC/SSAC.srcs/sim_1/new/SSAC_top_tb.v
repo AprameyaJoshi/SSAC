@@ -51,26 +51,30 @@ module SSAC_top_tb;
     begin
         uart_clk = 1'b0;
         sys_clk = 1'b0;
-        rst = 0;
+        rst = 1'b0;
         mem_rd_en = 1'b0;
         tx_fifo_wr_en = 1'b0;
         #20;
         rst = 1'b1;
         mem_rd_en = 1'b1;
-        // PACKET:1
-        
+        // PACKET:1        
         #20 tx_fifo_wr_en = 1'b1;
-            tx_byte = 8'hAA;
-        #20 tx_byte = 8'h02;
+            tx_byte = 8'hAA;    // HEADER BYTE
+        #20 tx_byte = 8'h02;    // LENGTH BYTE
         #20 tx_byte = 8'h05;
         #20 tx_byte = 8'hCA;
-        #20 tx_byte = 8'hCF;
-        #20 tx_byte = 8'hFF;
-        
-        // RANDOM BYTES:
-        
-//        #20 tx_in = 8'h07;
-//        #20 tx_in = 8'h08;
+        #20 tx_byte = 8'hCF;    // CHECKSUM
+        #20 tx_byte = 8'hFF;    // END BYTE
+        // PACKET:2
+        #20 tx_byte = 8'hAA;
+        #20 tx_byte = 8'h05;
+        #20 tx_byte = 8'h00;
+        #20 tx_byte = 8'h01;
+        #20 tx_byte = 8'h02;
+        #20 tx_byte = 8'h03;
+        #20 tx_byte = 8'h04;
+        #20 tx_byte = 8'h0A;
+        #20 tx_byte = 8'hff;
         
         #20 tx_fifo_wr_en = 1'b0;
     end
