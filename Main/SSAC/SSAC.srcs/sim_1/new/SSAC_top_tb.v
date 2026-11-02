@@ -75,7 +75,7 @@ module SSAC_top_tb;
         #20 tx_byte = 8'h02;
         #20 tx_byte = 8'h03;
         #20 tx_byte = 8'h04;
-        #20 tx_byte = 8'h0A;    // CHECKSUM BYTE
+        #20 tx_byte = 8'h0B;    // CHECKSUM BYTE
         #20 tx_byte = 8'hff;
         
         // PACKET:3
@@ -86,6 +86,8 @@ module SSAC_top_tb;
         #20 tx_byte = 8'h02;
         #20 tx_byte = 8'h0A;    //CHECKSUM BYTE
         #20 tx_byte = 8'hff;    // END BYTE
+        
+        #20 tx_byte = 8'hBC;    //RANDOM BYTE
         
         #20 tx_fifo_wr_en = 1'b0;
     end

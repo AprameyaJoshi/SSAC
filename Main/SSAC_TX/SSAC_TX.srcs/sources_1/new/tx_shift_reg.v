@@ -27,7 +27,9 @@ module tx_shift_reg(
     input [7:0] fifo_data,
     output reg shift_out, shift_receive, shift_full
     );
-     
+    
+    reg [7:0] shift_reg1;
+    reg shift_busy; 
     reg [2:0] i;
                 
     always @ (posedge uart_clk)
@@ -36,6 +38,7 @@ module tx_shift_reg(
         begin
             shift_full <= 1'b0;
             shift_receive <= 1'b0;
+            shift_reg1 <= 8'b0;
             shift_out <= 1'b0;
             i <= 3'b0; 
         end
@@ -44,26 +47,30 @@ module tx_shift_reg(
         begin
             shift_receive <= 1'b0;
             
-            if(!shift_full && !fifo_empty && i == 3'b0)
+            if(!shift_full && !fifo_empty && i)
             begin
                 shift_receive <= 1'b1;
                 shift_full <= 1'b1;
             end            
-            
-            if(tx_receive)
+           
+            if(shift_full)
             begin
-                if(i < 3'd7)
-                begin
-                    shift_out <= fifo_data[i];
-                    i <= i+1'b1;
+                shift_reg1 <= fifo_data;
+                if(tx_receive)
+                begin                        
+                    if(i < 3'd7)
+                    begin
+                        shift_out <= shift_reg1[i];
+                        i <= i+1'b1;
+                    end
+                    if(i == 3'd7)
+                    begin
+                        shift_out <= shift_reg1[i];
+                        i <= i+1'b1;
+                        shift_full <= 1'b0;
+                    end
                 end
-                if(i == 7)
-                begin
-                    shift_out <= fifo_data[i];
-                    i <= i+1'b1;
-                    shift_full <= 1'b0;
-                end
-            end 
+            end
         end               
     end
 endmodule

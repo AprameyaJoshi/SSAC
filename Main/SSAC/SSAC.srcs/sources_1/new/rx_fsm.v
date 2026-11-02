@@ -42,11 +42,7 @@ reg [7:0]buffA[0:15];
 reg [7:0]buffB[0:15];
 reg [7:0]calc_chk_sum,end_byte;
 
-parameter idle=3'b000;
-parameter read_len=3'b001;
-parameter read_data=3'b010;
-parameter checksum_calc=3'b011;
-parameter read_end=3'b100;
+parameter [2:0] idle=3'b000,read_len=3'b001,read_data=3'b010,checksum_calc=3'b011,read_end=3'b100;
 
 always @(posedge clk)
 begin

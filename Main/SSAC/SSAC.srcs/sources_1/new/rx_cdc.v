@@ -88,7 +88,7 @@ module rx_cdc (
 
 
     always @(posedge rd_clk or negedge rst_n)
-    begin
+    begin 
         if (!rst_n)
         begin
             rd_ptr_bin <= 5'd0;

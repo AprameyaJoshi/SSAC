@@ -23,8 +23,8 @@
 module tx_fifo(
 input clk,rst,rd_en,wr_en,
 input[7:0]data_in,
-output reg full,empty,
-output reg [7:0]fifo_data
+output full,empty,
+output reg[7:0]fifo_data
 );
 
 reg [7:0]mem[0:31];
@@ -50,12 +50,11 @@ begin
         if (rd_en && !empty )
         begin
             rd_ptr<=rd_ptr+1'b1;
-            fifo_data<=mem[rd_ptr];
+            fifo_data<=mem[rd_ptr];            
             cnt<=cnt-1'b1;
         end
-        
-        empty<=(cnt==0)?1'b1:1'b0;
-        full<=(cnt==6'd32)?1'b1:1'b0;
     end
 end
+assign empty=(cnt==0)?1'b1:1'b0;
+assign full=(cnt==6'd32)?1'b1:1'b0;
 endmodule

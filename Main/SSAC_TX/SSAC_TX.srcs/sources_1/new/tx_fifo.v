@@ -45,13 +45,13 @@ begin
         begin
             mem[wr_ptr]<=data_in;
             wr_ptr<=wr_ptr+1'b1;
-            cnt=cnt+1'b1;
+            cnt<=cnt+1'b1;
         end
         if (rd_en && !empty )
         begin
             fifo_data<=mem[rd_ptr];
             rd_ptr<=rd_ptr+1'b1;
-            cnt=cnt-1'b1;
+            cnt<=cnt-1'b1;
         end
     end
 end
